@@ -17,22 +17,13 @@ app.use(express.json())
 // POST usuarios
 router.post('/users', async (req, res) => {
     try {
-        logger.info("Solicitud recibida en POST /users");
-        logger.info("Datos recibidos:", req.body); // 👈 Verifica qué está llegando
-
-        const { uid, name, age, adress } = req.body;
-        if (!name || !age || !adress) {
-            return res.status(400).send({ error: "Faltan datos obligatorios" });
-        }
-
-        await addUser({ uid, name, age, adress });
-        return res.status(201).send({ message: 'Usuario creado con éxito' });
-
+        const {uid, name, age, adress} = req.body
+        await addUser({uid, name, age, adress})
+        return res.status(201).send({message: 'success'})
     } catch (error) {
-        console.error("Error en POST /users:", error);
-        return res.status(500).send({ error: error.message });
+        return res.status(500).send({error: error.message})
     }
-});
+})
 
 // GET ALL
 router.get('/users', async (req, res) => {
