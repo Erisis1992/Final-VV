@@ -2,6 +2,11 @@ const express = require('express')
 const app = express()
 const {getUsers, addUser, findUserByUid, updateUserByUid, removeUserByUid}= require('./data/users')
 const pino = require('pino-http')()
+const cors = require('cors')
+
+app.use(cors({
+    origin: 'http://localhost:5173'
+}));
 
 app.use(pino)
 
@@ -12,13 +17,22 @@ app.use(express.json())
 // POST usuarios
 router.post('/users', async (req, res) => {
     try {
-        const {uid, name, age, adress} = req.body
-        await addUser({uid, name, age, adress})
-        return res.status(201).send({message: 'success'})
+        logger.info("Solicitud recibida en POST /users");
+        logger.info("Datos recibidos:", req.body); // 👈 Verifica qué está llegando
+
+        const { uid, name, age, adress } = req.body;
+        if (!name || !age || !adress) {
+            return res.status(400).send({ error: "Faltan datos obligatorios" });
+        }
+
+        await addUser({ uid, name, age, adress });
+        return res.status(201).send({ message: 'Usuario creado con éxito' });
+
     } catch (error) {
-        return res.status(500).send({error: error.message})
+        console.error("Error en POST /users:", error);
+        return res.status(500).send({ error: error.message });
     }
-})
+});
 
 // GET ALL
 router.get('/users', async (req, res) => {
