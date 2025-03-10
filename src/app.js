@@ -9,35 +9,59 @@ const router = express.Router()
 
 
 app.use(express.json())
-//post usuarios
-router.post('/users', (req, res) => {
-    const {uid, name, age, address} = req.body
-    addUser({uid, name, age, address})
-    return res.status(201).send({message: 'success'})
+// POST usuarios
+router.post('/users', async (req, res) => {
+    try {
+        const {uid, name, age, adress} = req.body
+        await addUser({uid, name, age, adress})
+        return res.status(201).send({message: 'success'})
+    } catch (error) {
+        return res.status(500).send({error: error.message})
+    }
 })
-//GET ALL
-router.get('/users', (req, res) => {
-    return res.status(200).send(getUsers())
-})
-//GET by ID
-router.get('/users/:uid', (req, res) => {
-    const {uid} = req.params
-    const user = findUserByUid({uid})
-    return res.status(200).send(user)
-})
-//UPDATE users
-router.put('/users/:uid', (req, res) => {
-    const {name, age, address} = req.body
-    const {uid} = req.params
-    const usersUpdated = updateUserByUid({uid, name, age, address})
 
-    return res.status(200).send(usersUpdated)
+// GET ALL
+router.get('/users', async (req, res) => {
+    try {
+        const users = await getUsers()
+        return res.status(200).send(users)
+    } catch (error) {
+        return res.status(500).send({error: error.message})
+    }
 })
-//DELETE users
-router.delete('/users/:uid', (req, res) => {
-    const {uid} = req.params
-    const usersUpdated = removeUserByUid({uid})
-    return res.status(200).send(usersUpdated)
+
+// GET by ID
+router.get('/users/:uid', async (req, res) => {
+    try {
+        const {uid} = req.params
+        const user = await findUserByUid({uid})
+        return res.status(200).send(user)
+    } catch (error) {
+        return res.status(500).send({error: error.message})
+    }
+})
+
+// UPDATE users
+router.put('/users/:uid', async (req, res) => {
+    try {
+        const {name, age, adress} = req.body
+        const {uid} = req.params
+        const usersUpdated = await updateUserByUid({uid, name, age, adress})
+        return res.status(200).send(usersUpdated)
+    } catch (error) {
+        return res.status(500).send({error: error.message})
+    }
+})
+
+// DELETE users
+router.delete('/users/:uid', async (req, res) => {
+    try {
+        const {uid} = req.params
+        const usersUpdated = await removeUserByUid({uid})
+        return res.status(200).send(usersUpdated)
+    } catch (error) {
+        return res.status(500).send({error: error.message})
+    }
 })
 
 app.use(router)
